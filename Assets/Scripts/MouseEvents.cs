@@ -49,7 +49,11 @@ namespace Pathfinding
                 _manager.IsPowerPlant = false;
                 _manager.IsSoldier = false;
                 Debug.Log("Barracks");
-
+                for (int s = 0; s < _manager.SoldierList.Count; s++)
+                {
+                    _manager.SoldierList[s].GetComponent<Soldier>().ColorArea.SetActive((false));
+                }
+                _manager.SoldierList.Clear();
                 _manager.SelectedBarracks.Clear();
                 _manager.SelectedBarracks.Add(this.gameObject);
             }
@@ -59,32 +63,43 @@ namespace Pathfinding
                 _manager.IsBarracks = false;
                 _manager.IsSoldier = false;
                 Debug.Log("PowerPlant");
+                
+                for (int s = 0; s < _manager.SoldierList.Count; s++)
+                {
+                    _manager.SoldierList[s].GetComponent<Soldier>().ColorArea.SetActive((false));
+                }
+                _manager.SoldierList.Clear();
             }
             if (this.gameObject.tag == "Soldier")
             {
                 _manager.TargetPosition = _camera_Obj.ScreenToWorldPoint(Input.mousePosition);
                 _manager.TargetPosition = this.gameObject.transform.position;
 
-                _manager.SoldierList.Add(this.gameObject);
                 _manager.IsSoldier = true;
                 _manager.IsPowerPlant = false;
                 _manager.IsBarracks = false;
-                if (!Input.GetKey(KeyCode.LeftShift))
+
+                if (!Input.GetKey(KeyCode.LeftShift)) // Ýf we want to select all soldiers, we must press left shift with mouse
+                    // left click.
                 {
                     for (int s = 0; s < _manager.SoldierList.Count; s++)
                     {
-                        if (_manager.SoldierList[s] == this.gameObject)
-                        {
-                            _manager.SoldierList[s].GetComponent<Soldier>().ColorArea.SetActive((true));
-                        }
-                        else
-                        {
-                            _manager.SoldierList[s].GetComponent<Soldier>().ColorArea.SetActive((false));
-                        }
+                        _manager.SoldierList[s].GetComponent<Soldier>().ColorArea.SetActive((false));
                     }
+                    if (!_manager.SoldierList.Contains(this.gameObject))
+                    {
+                        _manager.SoldierList.Clear();
+                        _manager.SoldierList.Add(this.gameObject);
+                    }
+
+                    this.gameObject.GetComponent<Soldier>().ColorArea.SetActive((true));
                 }
                 else
                 {
+                    if (!_manager.SoldierList.Contains(this.gameObject))
+                    {
+                        _manager.SoldierList.Add(this.gameObject);
+                    }
                     this.gameObject.GetComponent<Soldier>().ColorArea.SetActive((true));
                 }
                 Debug.Log("Soldier");
